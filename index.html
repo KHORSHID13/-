@@ -1,0 +1,203 @@
+<!DOCTYPE html><html lang="fa">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>کارت آنالیز فوتبالی</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      direction: rtl;
+      background: #e0e0e0;
+      padding: 20px;
+    }
+    h1 {
+      text-align: center;
+      color: #0057a3;
+    }
+    form {
+      background: #fff;
+      padding: 20px;
+      border-radius: 12px;
+      max-width: 600px;
+      margin: auto;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+    label {
+      display: block;
+      margin: 15px 0 5px;
+      font-weight: bold;
+    }
+    input[type=number], input[type=text], select {
+      width: 100%;
+      padding: 10px;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+    }
+    button {
+      background: #0057a3;
+      color: white;
+      border: none;
+      padding: 15px;
+      width: 100%;
+      border-radius: 10px;
+      margin-top: 20px;
+      font-size: 16px;
+    }
+    .fut-card {
+      width: 250px;
+      margin: 40px auto;
+      background: linear-gradient(to bottom, #d4af37, #fff);
+      border-radius: 20px;
+      text-align: center;
+      padding: 20px 10px;
+      box-shadow: 0 0 15px rgba(0,0,0,0.4);
+      font-family: sans-serif;
+      direction: ltr;
+    }
+    .fut-card h2 {
+      font-size: 20px;
+      margin: 5px 0;
+    }
+    .fut-rating {
+      font-size: 40px;
+      font-weight: bold;
+      color: #111;
+    }
+    .fut-labels {
+      font-size: 16px;
+      font-weight: bold;
+      margin-top: 10px;
+      line-height: 1.5;
+    }
+    .fut-position {
+      font-size: 18px;
+      color: #333;
+    }
+    .fut-stats {
+      margin-top: 20px;
+      text-align: left;
+      font-size: 14px;
+    }
+    .fut-stats div {
+      display: flex;
+      justify-content: space-between;
+      margin: 3px 0;
+    }
+    .player-image {
+      width: 100%;
+      height: auto;
+      border-radius: 10px;
+      margin-top: 10px;
+    }
+  </style>
+</head>
+<body>
+  <h1>آنالیز سطح فوتبال شما</h1>
+  <form id="footballForm">
+    <label>نام</label>
+    <input type="text" name="firstName" required><label>نام خانوادگی</label>
+<input type="text" name="lastName" required>
+
+<label>طرفدار کدام بازیکن هستی؟</label>
+<select name="favorite" required>
+  <option value="ronaldo">کریستیانو رونالدو</option>
+  <option value="messi">لعو مسی</option>
+</select>
+
+<label>چند گل در هر بازی می‌زنی؟ (از 100)</label>
+<input type="number" name="goal" max="100" min="0" required>
+
+<label>چند تا روپایی می‌زنی؟ (از 100)</label>
+<input type="number" name="keepie" max="100" min="0" required>
+
+<label>سرعت دویدن چقدر خوبه؟ (از 100)</label>
+<input type="number" name="speed" max="100" min="0" required>
+
+<label>دفاع چقدر قوی هستی؟ (از 100)</label>
+<input type="number" name="defense" max="100" min="0" required>
+
+<label>دریبل زدن چطور انجام می‌دی؟ (از 100)</label>
+<input type="number" name="dribble" max="100" min="0" required>
+
+<label>قدرت بدنی و استقامت؟ (از 100)</label>
+<input type="number" name="strength" max="100" min="0" required>
+
+<label>پاس‌کاری دقیق؟ (از 100)</label>
+<input type="number" name="pass" max="100" min="0" required>
+
+<label>دقت شوت‌ها چطوره؟ (از 100)</label>
+<input type="number" name="shoot" max="100" min="0" required>
+
+<button type="submit">محاسبه کارت بازیکن</button>
+
+  </form>  <div class="fut-card" id="card" style="display:none;">
+    <div class="fut-rating" id="overall"></div>
+    <div class="fut-labels">
+      GOALKEEPER<br>
+      DEFENDER<br>
+      ATTACKER
+    </div>
+    <div class="fut-position" id="position">ST</div>
+    <h2 id="cardName"></h2>
+    <img id="playerImg" class="player-image" src="" alt="player image" style="display:none;" />
+    <div class="fut-stats">
+      <div><span>PAC</span><span id="pac"></span></div>
+      <div><span>SHO</span><span id="sho"></span></div>
+      <div><span>PAS</span><span id="pas"></span></div>
+      <div><span>DRI</span><span id="dri"></span></div>
+      <div><span>DEF</span><span id="def"></span></div>
+      <div><span>PHY</span><span id="phy"></span></div>
+    </div>
+  </div>  <script>
+    function toEnglishName(name) {
+      const persianToEnglish = {
+        'ا': 'a', 'ب': 'b', 'پ': 'p', 'ت': 't', 'ث': 's', 'ج': 'j', 'چ': 'ch', 'ح': 'h', 'خ': 'kh',
+        'د': 'd', 'ذ': 'z', 'ر': 'r', 'ز': 'z', 'ژ': 'zh', 'س': 's', 'ش': 'sh', 'ص': 's',
+        'ض': 'z', 'ط': 't', 'ظ': 'z', 'ع': 'a', 'غ': 'gh', 'ف': 'f', 'ق': 'gh', 'ک': 'k',
+        'گ': 'g', 'ل': 'l', 'م': 'm', 'ن': 'n', 'و': 'v', 'ه': 'h', 'ی': 'y', 'ء': ''
+      };
+      return name.split('').map(ch => persianToEnglish[ch] || ch).join('');
+    }
+
+    document.getElementById('footballForm').addEventListener('submit', function(e) {
+      e.preventDefault();
+      const form = e.target;
+      const data = new FormData(form);
+
+      const firstName = data.get('firstName');
+      const lastName = data.get('lastName');
+      const favorite = data.get('favorite');
+      const fullNameEng = `${toEnglishName(firstName)} ${toEnglishName(lastName)}`;
+
+      const goal = parseInt(data.get('goal'));
+      const keepie = parseInt(data.get('keepie'));
+      const speed = parseInt(data.get('speed'));
+      const defense = parseInt(data.get('defense'));
+      const dribble = parseInt(data.get('dribble'));
+      const strength = parseInt(data.get('strength'));
+      const pass = parseInt(data.get('pass'));
+      const shoot = parseInt(data.get('shoot'));
+
+      const overall = Math.round((goal + keepie + speed + defense + dribble + strength + pass + shoot) / 8);
+
+      document.getElementById('overall').textContent = overall;
+      document.getElementById('cardName').textContent = fullNameEng.toUpperCase();
+      document.getElementById('pac').textContent = speed;
+      document.getElementById('sho').textContent = shoot;
+      document.getElementById('pas').textContent = pass;
+      document.getElementById('dri').textContent = dribble;
+      document.getElementById('def').textContent = defense;
+      document.getElementById('phy').textContent = strength;
+
+      const imgEl = document.getElementById('playerImg');
+      if (favorite === 'ronaldo') {
+        imgEl.src = 'https://upload.wikimedia.org/wikipedia/commons/thumb/6/6d/Cristiano_Ronaldo_2008.jpg/300px-Cristiano_Ronaldo_2008.jpg';
+      } else {
+        imgEl.src = 'https://upload.wikimedia.org/wikipedia/commons/thumb/4/42/Lionel_Messi_2011.jpg/300px-Lionel_Messi_2011.jpg';
+      }
+      imgEl.style.display = 'block';
+
+      document.getElementById('card').style.display = 'block';
+    });
+  </script></body>
+</html>
